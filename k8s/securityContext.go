@@ -13,6 +13,12 @@ import (
 // value >10000 per the suggestion from https://kubesec.io/basics/containers-securitycontext-runasuser/
 const SecurityContextUserID = int64(12000)
 
+// SecurityContextFSGroup is the arbitrary FSGroup ID value we will set when the pod is configured
+// to run as non-root. This is useful in AWS EKS to allow the container to access the service
+// account token, per these docs
+// https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts-technical-overview.html
+const SecurityContextFSGroup = int64(12000)
+
 // ConfigureContainerUserID sets the UID to 12000 for the function Container.  Defaults to user
 // specified in image metadata if `SetNonRootUser` is `false`. Root == 0.
 func (f *FunctionFactory) ConfigureContainerUserID(deployment *appsv1.Deployment) {
@@ -21,6 +27,15 @@ func (f *FunctionFactory) ConfigureContainerUserID(deployment *appsv1.Deployment
 
 	if f.Config.SetNonRootUser {
 		functionUser = &userID
+	}
+
+	if deployment.Spec.Template.Spec.SecurityContext == nil {
+		deployment.Spec.Template.Spec.SecurityContext = &corev1.PodSecurityContext{}
+	}
+
+	if f.Config.SetNonRootUser {
+		groupID := SecurityContextFSGroup
+		deployment.Spec.Template.Spec.SecurityContext.FSGroup = &groupID
 	}
 
 	if deployment.Spec.Template.Spec.Containers[0].SecurityContext == nil {
