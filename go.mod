@@ -12,7 +12,7 @@ require (
 	github.com/openfaas/faas v0.0.0-20191125105239-365f459b3f3a
 	github.com/openfaas/faas-provider v0.16.2
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.9.0
+	github.com/prometheus/client_golang v1.10.0
 	google.golang.org/appengine v1.6.2 // indirect
 	k8s.io/api v0.18.2
 	k8s.io/apimachinery v0.18.2
